@@ -14,17 +14,25 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: '17'
 
-      
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
+      - name: Unzip project
+        run: unzip -q project.zip -d proj
+
+      - name: Accept licenses and install SDK
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug
+        working-directory: proj
+        run: gradle assembleDebug
 
       - uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/*.apk
+          name: SERTZIO-debug-apk
+          path: proj/app/build/outputs/apk/debug/app-debug.apk
