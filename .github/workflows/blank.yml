@@ -22,12 +22,13 @@ jobs:
 
       - name: Unzip project
         run: unzip -q project.zip -d proj
-
+        
       - name: Accept licenses and install SDK
         run: |
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
-
+          SDKM=$(find "$ANDROID_HOME" -name sdkmanager -type f | head -1)
+          yes | "$SDKM" --licenses > /dev/null || true
+          "$SDKM" "platforms;android-35" "build-tools;35.0.0"
+          
       - name: Build debug APK
         working-directory: proj
         run: gradle assembleDebug
